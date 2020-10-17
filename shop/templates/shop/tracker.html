@@ -1,0 +1,121 @@
+{% extends 'shop/base.html' %}
+{% block title %}Tracker{% endblock title %}
+{% load static %}
+{% block body %}
+<div class="container my-3">
+    <h2>Enter Your Order Id And Email Address To Track Your Order</h2>
+    <form method="post" action="#" id="trackerForm">
+        {% csrf_token %}
+        <div class="form-row">
+         
+            <div class="form-group col-md-6">
+                <label for="inputEmail4">Order Id</label>
+                <input type="text" class="form-control" id="orderId" name="orderId">
+            </div>
+            <div class="form-group col-md-6">
+                <label for="inputEmail4">Email</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="Enter Your Email">
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Track Order</button>
+
+
+    </form>
+</div>
+
+<div class="container my-3">
+    <h2>Your Order Status</h2>
+    <ul class="list-group" id="list">
+       <p>Enter your order id and email and click on Track Order to find details about your order</p>
+    </ul>
+</div>
+<div class="container my-3">
+    <h2>Your Order Details</h2>
+    <ul class="list-group" id="details">
+       <p>Please enter your order id and email and click Track Order to see order details</p>
+    </ul>
+</div>
+
+{% endblock body %}
+{% block script %}
+<script>
+    console.log('wekoc')
+$('#trackerForm').submit(function(event){
+    // $('#list').empty()
+    var formData = {
+        'orderId' : $('input[name=orderId]').val(),
+        'email' : $('input[name=email]').val(),
+        'csrfmiddlewaretoken' : $('input[name=csrfmiddlewaretoken]').val()
+    }
+
+   
+    $.ajax({
+            type: 'POST',
+            url: '/shop/tracker/',
+            data: formData,
+            encode: true
+        })
+        .done(function(data){
+            if(data != "{}"){
+                data=JSON.parse(data)
+                details=JSON.parse(data[1])
+
+            
+                let trackStr=""
+                data[0].forEach(function(element){
+                    let text = element['text']
+                    let time = element['timestamp']
+                    trackStr=trackStr+`<li class="list-group-item d-flex justify-content-between align-items-center">
+                    ${text} 
+                    <span class="badge badge-primary badge-pill">${time}</span>
+                    </li>`
+                });
+
+                $('#list').html(trackStr)
+
+
+                let detailStr = ""
+                for(let key in details){
+                    let productName = details[key][1]
+                    let qantity = details[key][0]
+                    detailStr=detailStr+`<li class="list-group-item d-flex justify-content-between align-items-center">
+                    ${productName} 
+                    <span class="badge badge-primary badge-pill">${qantity}</span>
+                    </li>`
+                }
+                $('#details').html(detailStr)
+                
+            }
+            else
+            {
+                let trackStr="";
+                trackStr=trackStr+`<li class="list-group-item list-group-item-danger d-flex justify-content-between align-items-center">
+                    Sorry, We are not able to fetch this order id and email. Make sure to type correct order Id and email</li>`
+
+                $('#list').html(trackStr)
+
+
+                let detailStr = ""
+                detailStr=detailStr+`<li class="list-group-item list-group-item-danger d-flex justify-content-between align-items-center">
+                    Sorry, We are not able to fetch this order id and email. Make sure to type correct order Id and email</li>`
+
+                    
+                $('#details').html(detailStr)
+            }
+      
+
+           
+
+        })
+
+ event.preventDefault()
+
+});
+
+</script>
+
+{% endblock script %}
+
+
+<!-- l34ixRDmX7snUMgGaR0d6cmkj6ZfFEsRUDoqqV5ax86nEDPKqdJz5btPLaQGLsm3 -->
+<!-- l34ixRDmX7snUMgGaR0d6cmkj6ZfFEsRUDoqqV5ax86nEDPKqdJz5btPLaQGLsm3 -->
