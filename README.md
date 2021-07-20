@@ -1,2 +1,2 @@
 # My-Store
-It is a E-commerce website[jlojljljo
+It is a E-commerce website.
